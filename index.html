@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UmrahCRM - Sistem Pengurusan Jemaah</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="device-shell" id="app-shell">
+
+  <!-- Sidebar (Desktop Only) -->
+  <aside class="sidebar-nav">
+    <div class="sidebar-brand">
+      <span class="brand-logo">🕋</span>
+      <span class="brand-name">UmrahCRM</span>
+    </div>
+    <nav class="sidebar-menu">
+      <button class="sidebar-link active" data-tab="dashboard"><i class="fas fa-chart-pie"></i><span>Ringkasan</span></button>
+      <button class="sidebar-link" data-tab="leads"><i class="fas fa-columns"></i><span>Leads</span></button>
+      <button class="sidebar-link" data-tab="pilgrims"><i class="fas fa-user-friends"></i><span>Jemaah</span></button>
+      <button class="sidebar-link" data-tab="journey"><i class="fas fa-route"></i><span>Perjalanan</span></button>
+      <button class="sidebar-link" data-tab="finance"><i class="fas fa-wallet"></i><span>Kewangan</span></button>
+      <button class="sidebar-link" data-tab="agents"><i class="fas fa-id-badge"></i><span>Ejen</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-link" onclick="resetDemoData()"><i class="fas fa-redo"></i><span>Reset Demo</span></button>
+      <button class="sidebar-link" onclick="exportData()"><i class="fas fa-download"></i><span>Eksport JSON</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Body -->
+  <div class="main-body">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo">🕋</div>
+        <div class="brand-name">UmrahCRM</div>
+      </div>
+      <div class="header-actions">
+        <div class="inline-view-switcher">
+          <button class="switcher-icon-btn active" id="btn-view-mobile" onclick="setViewMode('mobile')" title="Mobile"><i class="fas fa-mobile-alt"></i></button>
+          <button class="switcher-icon-btn" id="btn-view-desktop" onclick="setViewMode('desktop')" title="Desktop"><i class="fas fa-desktop"></i></button>
+        </div>
+        <div class="notification-bell" onclick="toggleNotifications()">
+          <i class="far fa-bell"></i>
+          <span class="notification-badge" id="notif-badge">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notification-panel">
+      <div class="notif-panel-header">
+        <h3>Pemberitahuan</h3>
+        <button class="notif-close-btn" onclick="toggleNotifications()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="notif-list" id="notif-list"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="app-content">
+
+      <!-- TAB 1: DASHBOARD -->
+      <section id="dashboard-screen" class="screen-view active">
+        <h2 class="section-title">Ringkasan Operasi</h2>
+        <div class="kpi-grid">
+          <div class="kpi-card gradient-purple">
+            <div class="kpi-icon"><i class="fas fa-money-bill-wave"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-label">Jumlah Kutipan</span>
+              <span class="kpi-value" id="kpi-revenue">RM 0</span>
+            </div>
+          </div>
+          <div class="kpi-card gradient-amber">
+            <div class="kpi-icon"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-label">Baki Tertunggak</span>
+              <span class="kpi-value" id="kpi-outstanding">RM 0</span>
+            </div>
+          </div>
+          <div class="kpi-card gradient-green">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-label">Jemaah Aktif</span>
+              <span class="kpi-value" id="kpi-pilgrims">0</span>
+            </div>
+          </div>
+          <div class="kpi-card gradient-blue">
+            <div class="kpi-icon"><i class="fas fa-funnel-dollar"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-label">Kadar Penukaran</span>
+              <span class="kpi-value" id="kpi-conversion">0%</span>
+            </div>
+          </div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card"><h3 class="chart-title">Corong Leads</h3><div class="chart-container"><canvas id="chart-funnel"></canvas></div></div>
+          <div class="chart-card"><h3 class="chart-title">Trend Bulanan</h3><div class="chart-container"><canvas id="chart-monthly"></canvas></div></div>
+          <div class="chart-card"><h3 class="chart-title">Prestasi Ejen</h3><div class="chart-container"><canvas id="chart-agents"></canvas></div></div>
+          <div class="chart-card"><h3 class="chart-title">Kutipan Pakej</h3><div class="chart-container"><canvas id="chart-revenue"></canvas></div></div>
+        </div>
+        <h3 class="section-title sub-title">Tindakan Segera</h3>
+        <div class="alerts-container" id="dashboard-alerts-list"></div>
+      </section>
+
+      <!-- TAB 2: LEADS -->
+      <section id="leads-screen" class="screen-view">
+        <div class="screen-header-row">
+          <h2 class="section-title">Papan Leads Jualan</h2>
+          <button class="add-btn" onclick="openAddLeadModal()"><i class="fas fa-plus"></i> Lead Baru</button>
+        </div>
+        <div class="kanban-container">
+          <div class="kanban-column"><div class="column-header"><span class="column-title"><i class="fas fa-star" style="color:#3B82F6"></i> Baru</span><span class="column-count" id="leads-count-new">0</span></div><div class="kanban-cards" id="leads-column-new"></div></div>
+          <div class="kanban-column"><div class="column-header"><span class="column-title"><i class="fas fa-phone-alt" style="color:#F59E0B"></i> Dihubungi</span><span class="column-count" id="leads-count-contacted">0</span></div><div class="kanban-cards" id="leads-column-contacted"></div></div>
+          <div class="kanban-column"><div class="column-header"><span class="column-title"><i class="fas fa-handshake" style="color:#8B5CF6"></i> Rundingan</span><span class="column-count" id="leads-count-negotiation">0</span></div><div class="kanban-cards" id="leads-column-negotiation"></div></div>
+          <div class="kanban-column"><div class="column-header"><span class="column-title"><i class="fas fa-check-double" style="color:#10B981"></i> Booked</span><span class="column-count" id="leads-count-booked">0</span></div><div class="kanban-cards" id="leads-column-booked"></div></div>
+          <div class="kanban-column"><div class="column-header"><span class="column-title"><i class="fas fa-times-circle" style="color:#EF4444"></i> Gagal</span><span class="column-count" id="leads-count-lost">0</span></div><div class="kanban-cards" id="leads-column-lost"></div></div>
+        </div>
+      </section>
+
+      <!-- TAB 3: PILGRIMS -->
+      <section id="pilgrims-screen" class="screen-view">
+        <div class="screen-header-row">
+          <h2 class="section-title">Direktori Jemaah</h2>
+          <button class="add-btn" onclick="openAddPilgrimModal()"><i class="fas fa-plus"></i> Jemaah Baru</button>
+        </div>
+        <div class="search-container">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="pilgrim-search" class="search-input" placeholder="Cari nama atau no pasport...">
+        </div>
+        <div class="filters-row">
+          <button class="filter-chip active" data-filter="all">Semua</button>
+          <button class="filter-chip" data-filter="visa_approved">Visa Lulus</button>
+          <button class="filter-chip" data-filter="visa_review">Semakan</button>
+          <button class="filter-chip" data-filter="visa_pending">Belum Mohon</button>
+          <button class="filter-chip" data-filter="passport_expiring">Pasport Tamat</button>
+        </div>
+        <div class="pilgrim-list" id="pilgrims-list-container"></div>
+      </section>
+
+      <!-- TAB 4: JOURNEY -->
+      <section id="journey-screen" class="screen-view">
+        <h2 class="section-title">Perjalanan Jemaah</h2>
+        <p class="section-desc">Jejak status setiap jemaah melalui 7 peringkat perjalanan Umrah.</p>
+        <div class="journey-stage-summary" id="journey-stage-summary"></div>
+        <div class="journey-pipeline" id="journey-pipeline-container"></div>
+      </section>
+
+      <!-- TAB 5: FINANCE -->
+      <section id="finance-screen" class="screen-view">
+        <div class="screen-header-row">
+          <h2 class="section-title">Kewangan & Pembayaran</h2>
+          <button class="add-btn" onclick="openPaymentModal()"><i class="fas fa-plus"></i> Rekod Bayaran</button>
+        </div>
+        <div class="finance-stats" id="finance-stats-container"></div>
+        <div class="chart-card" style="margin-bottom:16px"><h3 class="chart-title">Kutipan vs Tertunggak</h3><div class="chart-container"><canvas id="chart-finance"></canvas></div></div>
+        <div class="payment-table-card">
+          <h3 class="chart-title">Senarai Bayaran Terkini</h3>
+          <div class="payment-table-wrapper">
+            <table class="payment-table">
+              <thead><tr><th>Jemaah</th><th>Jumlah</th><th>Jenis</th><th>Tarikh</th><th>Status</th></tr></thead>
+              <tbody id="payment-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: AGENTS -->
+      <section id="agents-screen" class="screen-view">
+        <h2 class="section-title">Prestasi & Workload Ejen</h2>
+        <div class="chart-card" style="margin-bottom:16px"><h3 class="chart-title">Perbandingan Prestasi</h3><div class="chart-container"><canvas id="chart-agent-detail"></canvas></div></div>
+        <div class="agent-list" id="agents-list-container"></div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Tab Bar (Mobile) -->
+    <nav class="tab-bar">
+      <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-chart-pie"></i><span>Utama</span></button>
+      <button class="tab-btn" data-tab="leads"><i class="fas fa-columns"></i><span>Leads</span></button>
+      <button class="tab-btn" data-tab="pilgrims"><i class="fas fa-user-friends"></i><span>Jemaah</span></button>
+      <button class="tab-btn" data-tab="journey"><i class="fas fa-route"></i><span>Laluan</span></button>
+      <button class="tab-btn" data-tab="finance"><i class="fas fa-wallet"></i><span>Wang</span></button>
+      <button class="tab-btn" data-tab="agents"><i class="fas fa-id-badge"></i><span>Ejen</span></button>
+    </nav>
+
+  </div><!-- /main-body -->
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- Lead Detail -->
+  <div class="modal-overlay" id="lead-modal">
+    <div class="modal-content">
+      <div class="modal-header"><div class="modal-title" id="lead-modal-title">Perincian Lead</div><button class="modal-close-btn" onclick="closeModal('lead-modal')">&times;</button></div>
+      <div class="lead-detail-info">
+        <div class="detail-row"><span class="detail-label">Pakej Minat:</span><strong id="lead-modal-package">-</strong></div>
+        <div class="detail-row"><span class="detail-label">No Telefon:</span><strong id="lead-modal-phone">-</strong></div>
+        <div class="detail-row"><span class="detail-label">Sumber:</span><strong id="lead-modal-source">-</strong></div>
+        <div class="detail-row"><span class="detail-label">Tarikh Masuk:</span><strong id="lead-modal-date">-</strong></div>
+        <div class="detail-row"><span class="detail-label">Nilai Anggaran:</span><strong id="lead-modal-value">-</strong></div>
+      </div>
+      <div class="form-group"><label class="form-label">Status</label><select id="lead-status-select" class="form-select"><option value="New">Baru</option><option value="Contacted">Dihubungi</option><option value="Negotiation">Rundingan</option><option value="Booked">Booked</option><option value="Lost">Gagal</option></select></div>
+      <div class="form-group"><label class="form-label">Ejen</label><select id="lead-agent-select" class="form-select"></select></div>
+      <div class="form-group"><label class="form-label">Nota Cepat</label><textarea id="lead-note-input" class="form-textarea" placeholder="Tambah nota..."></textarea></div>
+      <button class="submit-btn" onclick="saveLeadChanges()">Simpan Perubahan</button>
+      <div class="activity-section"><h4 class="activity-heading">Log Aktiviti</h4><div class="activity-timeline" id="lead-activity-log"></div></div>
+    </div>
+  </div>
+
+  <!-- Pilgrim Detail -->
+  <div class="modal-overlay" id="pilgrim-modal">
+    <div class="modal-content">
+      <div class="modal-header"><div class="modal-title" id="pilgrim-modal-title">Profil Jemaah</div><button class="modal-close-btn" onclick="closeModal('pilgrim-modal')">&times;</button></div>
+      <div class="journey-tracker" id="pilgrim-journey-tracker"></div>
+      <div class="pilgrim-detail-grid" id="pilgrim-detail-grid"></div>
+      <div class="doc-checklist"><h4 class="activity-heading">Senarai Dokumen</h4><div class="doc-list" id="pilgrim-doc-list"></div></div>
+      <div class="payment-history-section"><h4 class="activity-heading">Sejarah Bayaran</h4><div class="payment-history" id="pilgrim-payment-history"></div></div>
+      <div class="pilgrim-modal-actions">
+        <button class="action-btn whatsapp" onclick="openWhatsAppFromPilgrim()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+        <button class="action-btn reassign" onclick="openReassignFromPilgrim()"><i class="fas fa-exchange-alt"></i> Tukar Ejen</button>
+        <button class="action-btn payment" onclick="openPaymentForPilgrim()"><i class="fas fa-receipt"></i> Bayaran</button>
+      </div>
+      <div class="activity-section"><h4 class="activity-heading">Log Aktiviti</h4><div class="activity-timeline" id="pilgrim-activity-log"></div></div>
+    </div>
+  </div>
+
+  <!-- Add Lead -->
+  <div class="modal-overlay" id="add-lead-modal">
+    <div class="modal-content">
+      <div class="modal-header"><div class="modal-title">Lead Baru</div><button class="modal-close-btn" onclick="closeModal('add-lead-modal')">&times;</button></div>
+      <div class="form-group"><label class="form-label">Nama Penuh</label><input type="text" id="new-lead-name" class="form-input" placeholder="Nama penuh"></div>
+      <div class="form-group"><label class="form-label">No Telefon</label><input type="tel" id="new-lead-phone" class="form-input" placeholder="+6012-3456789"></div>
+      <div class="form-group"><label class="form-label">Sumber Lead</label><select id="new-lead-source" class="form-select"><option value="Facebook Ads">Facebook Ads</option><option value="WhatsApp">WhatsApp</option><option value="TikTok">TikTok</option><option value="Referral">Referral</option><option value="Walk-in">Walk-in</option><option value="Website">Website</option></select></div>
+      <div class="form-group"><label class="form-label">Pakej Minat</label><select id="new-lead-package" class="form-select"></select></div>
+      <div class="form-group"><label class="form-label">Nota</label><textarea id="new-lead-notes" class="form-textarea" placeholder="Nota tambahan..."></textarea></div>
+      <button class="submit-btn" onclick="addNewLead()">Tambah Lead</button>
+    </div>
+  </div>
+
+  <!-- Add Pilgrim -->
+  <div class="modal-overlay" id="add-pilgrim-modal">
+    <div class="modal-content">
+      <div class="modal-header"><div class="modal-title">Daftar Jemaah Baru</div><button class="modal-close-btn" onclick="closeModal('add-pilgrim-modal')">&times;</button></div>
+      <div class="form-group"><label class="form-label">Nama Penuh</label><input type="text" id="new-pilgrim-name" class="form-input" placeholder="Nama penuh"></div>
+      <div class="form-group"><label class="form-label">No Kad Pengenalan</label><input type="text" id="new-pilgrim-ic" class="form-input" placeholder="880101-14-5234"></div>
+      <div class="form-group"><label class="form-label">No Pasport</label><input type="text" id="new-pilgrim-passport" class="form-input" placeholder="A12345678"></div>
+      <div class="form-group"><label class="form-label">Tarikh Tamat Pasport</label><input type="date" id="new-pilgrim-passport-expiry" class="form-input"></div>
+      <div class="form-group"><label class="form-label">No Telefon</label><input type="tel" id="new-pilgrim-phone" class="form-input" placeholder="+6012-3456789"></div>
+      <div class="form-group"><label class="form-label">Pakej</label><select id="new-pilgrim-package" class="form-select"></select></div>
+      <div class="form-group"><label class="form-label">Kumpulan Keluarga</label><input type="text" id="new-pilgrim-group" class="form-input" placeholder="group-baru"></div>
+      <div class="form-group"><label class="form-label">Nama Waris</label><input type="text" id="new-pilgrim-emergency-name" class="form-input" placeholder="Nama waris"></div>
+      <div class="form-group"><label class="form-label">Hubungan</label><input type="text" id="new-pilgrim-emergency-rel" class="form-input" placeholder="Suami/Isteri"></div>
+      <div class="form-group"><label class="form-label">Telefon Waris</label><input type="tel" id="new-pilgrim-emergency-phone" class="form-input" placeholder="+6012-3456789"></div>
+      <button class="submit-btn" onclick="addNewPilgrim()">Daftar Jemaah</button>
+    </div>
+  </div>
+
+  <!-- Record Payment -->
+  <div class="modal-overlay" id="payment-modal">
+    <div class="modal-content">
+      <div class="modal-header"><div class="modal-title">Rekod Bayaran</div><button class="modal-close-btn" onclick="closeModal('payment-modal')">&times;</button></div>
+      <div class="form-group"><label class="form-label">Pilih Jemaah</label><select id="payment-pilgrim-select" class="form-select"></select></div>
+      <div class="form-group"><label class="form-label">Jumlah (RM)</label><input type="number" id="payment-amount" class="form-input" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Jenis Bayaran</label><select id="payment-type" class="form-select"><option value="deposit">Deposit</option><option value="installment">Ansuran</option><option value="balance">Baki Penuh</option></select></div>
+      <div class="form-group"><label class="form-label">No Rujukan</label><input type="text" id="payment-reference" class="form-input" placeholder="TRX-001"></div>
+      <button class="submit-btn" style="background-color:#10B981" onclick="recordPayment()"><i class="fas fa-receipt"></i> Rekod Bayaran</button>
+    </div>
+  </div>
+
+  <!-- WhatsApp Simulator -->
+  <div class="modal-overlay" id="whatsapp-modal">
+    <div class="modal-content">
+      <div class="modal-header"><div class="modal-title" id="wa-modal-title">WhatsApp Simulator</div><button class="modal-close-btn" onclick="closeModal('whatsapp-modal')">&times;</button></div>
+      <div class="form-group"><label class="form-label">Templat Mesej</label><select id="wa-template-select" class="form-select" onchange="generateWAPreview()"><option value="custom">Mesej Biasa</option><option value="passport">Peringatan Pasport</option><option value="visa">Pengesahan Visa</option><option value="deposit">Peringatan Deposit</option><option value="briefing">Jemputan Taklimat</option></select></div>
+      <div class="form-group"><label class="form-label">Kandungan Mesej</label><textarea id="wa-preview-text" class="form-textarea" oninput="updateWABubble()"></textarea></div>
+      <label class="form-label">Pratonton</label>
+      <div class="whatsapp-preview-container"><div class="wa-chat-bubble"><div id="wa-bubble-content">Mesej...</div><span class="wa-time">14:28 ✓✓</span></div></div>
+      <button class="submit-btn wa-send-btn" onclick="sendMockWhatsApp()"><i class="fab fa-whatsapp"></i> Simulasi Hantar</button>
+    </div>
+  </div>
+
+  <!-- Reassign Agent -->
+  <div class="modal-overlay" id="reassign-modal">
+    <div class="modal-content">
+      <div class="modal-header"><div class="modal-title" id="reassign-modal-title">Tukar Ejen</div><button class="modal-close-btn" onclick="closeModal('reassign-modal')">&times;</button></div>
+      <div class="form-group"><label class="form-label">Pilih Ejen Baru</label><select id="reassign-agent-select" class="form-select"></select></div>
+      <div class="form-group"><label class="form-label">Sebab</label><input type="text" id="reassign-reason" class="form-input" placeholder="Sebab penukaran"></div>
+      <button class="submit-btn" onclick="saveReassignment()">Kemaskini Ejen</button>
+    </div>
+  </div>
+
+  <!-- Agent Detail -->
+  <div class="modal-overlay" id="agent-modal">
+    <div class="modal-content">
+      <div class="modal-header"><div class="modal-title" id="agent-modal-title">Profil Ejen</div><button class="modal-close-btn" onclick="closeModal('agent-modal')">&times;</button></div>
+      <!-- Agent Profile Header -->
+      <div class="agent-modal-profile" id="agent-modal-profile"></div>
+      <!-- Agent KPIs -->
+      <div class="agent-modal-kpis" id="agent-modal-kpis"></div>
+      <!-- Client Section: Pilgrims -->
+      <div class="agent-clients-section">
+        <h4 class="activity-heading"><i class="fas fa-user-friends"></i> Jemaah Di Bawah Ejen</h4>
+        <div class="agent-clients-list" id="agent-pilgrim-list"></div>
+      </div>
+      <!-- Client Section: Leads -->
+      <div class="agent-clients-section">
+        <h4 class="activity-heading"><i class="fas fa-bullseye"></i> Lead Aktif</h4>
+        <div class="agent-clients-list" id="agent-lead-list"></div>
+      </div>
+      <!-- Activity Log -->
+      <div class="activity-section">
+        <h4 class="activity-heading">Log Aktiviti Ejen</h4>
+        <div class="activity-timeline" id="agent-activity-log"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /device-shell -->
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
