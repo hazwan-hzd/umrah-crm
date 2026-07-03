@@ -1125,7 +1125,7 @@ body {
   display: none;
 }
 
-.stage-summary-item {
+.stage-summary-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1139,7 +1139,7 @@ body {
   transition: all 0.2s;
 }
 
-.stage-summary-item:hover {
+.stage-summary-card:hover {
   box-shadow: var(--shadow-sm);
 }
 
@@ -1167,7 +1167,7 @@ body {
   gap: 20px;
 }
 
-.journey-stage-section {
+.pipeline-section {
   background: var(--bg-card);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
@@ -1175,11 +1175,12 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-.stage-section-header {
+.pipeline-header {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
+  padding-left: 8px;
 }
 
 .stage-icon {
@@ -1200,7 +1201,7 @@ body {
   flex: 1;
 }
 
-.stage-count {
+.pipeline-count {
   font-size: 11px;
   font-weight: 700;
   padding: 2px 10px;
@@ -1210,7 +1211,12 @@ body {
   border: 1px solid var(--border-color);
 }
 
-.journey-pilgrim-card {
+.pipeline-cards {
+  display: flex;
+  flex-direction: column;
+}
+
+.pipeline-pilgrim-card {
   display: flex;
   gap: 12px;
   padding: 10px 0;
@@ -1218,35 +1224,73 @@ body {
   align-items: center;
 }
 
-.journey-pilgrim-card:last-child {
+.pipeline-pilgrim-card:last-child {
   border-bottom: none;
 }
 
-.journey-pilgrim-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-main);
-  min-width: 80px;
+.pipeline-pilgrim-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.journey-progress-bar {
+.pipeline-pilgrim-info strong {
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.pipeline-pkg {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pipeline-days {
+  font-size: 10px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.pipeline-progress-bar {
   height: 4px;
   background: #E5E7EB;
   border-radius: 4px;
   flex: 1;
+  min-width: 60px;
+  max-width: 120px;
   overflow: hidden;
 }
 
-.journey-progress-fill {
+.pipeline-progress-fill {
   height: 100%;
   border-radius: 4px;
   transition: width 0.5s ease;
 }
 
-.journey-days-badge {
-  font-size: 10px;
-  color: var(--text-muted);
-  white-space: nowrap;
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn-outline {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--border-purple);
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
 }
 
 /* ===== 18. JOURNEY TRACKER (Modal) ===== */
@@ -1439,7 +1483,7 @@ body {
   gap: 12px;
 }
 
-.agent-profile-card {
+.agent-card {
   background: var(--bg-card);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
@@ -1452,11 +1496,12 @@ body {
   transition: all 0.2s;
 }
 
-.agent-profile-card:hover {
+.agent-card:hover {
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
-.agent-large-avatar {
+.agent-avatar {
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -1470,19 +1515,19 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-.agent-card-info {
+.agent-info {
   flex: 1;
   min-width: 0;
 }
 
-.agent-card-name {
+.agent-name {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
   margin-bottom: 2px;
 }
 
-.agent-rating {
+.agent-stars {
   font-size: 11px;
   color: var(--status-warning);
   display: flex;
@@ -1491,22 +1536,35 @@ body {
   margin-bottom: 6px;
 }
 
-.agent-stats-row {
-  display: flex;
-  gap: 16px;
+.agent-stars .rating-num {
   font-size: 11px;
+  font-weight: 700;
   color: var(--text-muted);
+  margin-left: 4px;
 }
 
-.agent-stats-row span {
+.agent-stats {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.agent-stats span {
   display: flex;
   align-items: center;
   gap: 3px;
 }
 
-.agent-stats-row strong {
-  color: var(--text-main);
-  font-weight: 700;
+.agent-phone {
+  font-size: 11px;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
 }
 
 .agent-progress-bar {
