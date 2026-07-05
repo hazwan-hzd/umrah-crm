@@ -360,7 +360,7 @@ const DEFAULT_DATA = {
     passport: 'Assalamualaikum {name},\n\nIni peringatan bahawa pasport anda akan tamat tempoh pada *{expiryDate}*. Sila perbaharui pasport anda secepat mungkin untuk memastikan kelancaran proses Umrah.\n\nTerima kasih.\n- Agensi Umrah Kami',
     visa: 'Assalamualaikum {name},\n\nStatus visa anda sedang dalam proses semakan. Kami akan memaklumkan sebarang perkembangan.\n\nDokumen yang diperlukan:\n- Pasport asal\n- Gambar berukuran pasport\n- Salinan IC\n\nTerima kasih.',
     deposit: 'Assalamualaikum {name},\n\nTerima kasih atas minat anda untuk pakej *{package}*. Deposit sebanyak *RM{deposit}* diperlukan untuk mengesahkan tempahan anda.\n\nSila hubungi kami untuk maklumat lanjut.\n\nJazakallahu khairan.',
-    briefing: 'Assalamualaikum {name},\n\nAnda dijemput ke sesi taklimat Umrah pada *{date}* di *{location}*.\n\nSila hadir tepat pada waktunya. Bawa bersama pasport asal dan dokumen berkaitan.\n\nTerima kasih.',
+    briefing: 'Assalamualaikum {name},\n\ Anda dijemput ke sesi taklimat Umrah pada *{date}* di *{location}*.\n\nSila hadir tepat pada waktunya. Bawa bersama pasport asal dan dokumen berkaitan.\n\nTerima kasih.',
     custom: 'Assalamualaikum {name},\n\n[Tulis mesej anda di sini]\n\nTerima kasih.\n- Agensi Umrah Kami'
   }
 };

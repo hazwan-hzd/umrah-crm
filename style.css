@@ -2398,8 +2398,6 @@ body {
   margin-bottom: 8px;
   white-space: nowrap;
   pointer-events: auto;
-  max-width: 90vw;
-  text-align: center;
 }
 
 @keyframes toastIn {
